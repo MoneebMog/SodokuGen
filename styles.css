@@ -108,111 +108,49 @@ h1 {
 }
 
 
-.dark-theme {
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+#checkButton {
+  margin-left: 10px;
+}
+
+#checkButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.number-input {
+  font-size: 18px;
+  padding: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  color: #4CAF50; /* Set the color for the correct input */
+}
+
+.number-input.error {
+  color: #FF0000; /* Set the color for the incorrect input */
+}
+
+.flying-icon {
+  position: absolute;
+  font-size: 30px;
+  animation: flying 2s linear infinite;
+}
+
+.selected {
+  background-color: rgb(212, 212, 198);
+  color: black;
+}
+
+@keyframes flying {
+  0% {
+    transform: translate(0, 0);
   }
-  
-  h1 {
-    margin-top: 20px;
+
+  50% {
+    transform: translate(100vw, 0);
   }
-  
-  #controls {
-    margin-top: 20px;
-  }
-  
-  #numberSlider {
-    width: 200px;
-  }
-  
-  #numberLabel {
-    font-weight: bold;
-    margin-left: 10px;
-  }
-  
-  #generateButton {
-    margin-left: 10px;
-  }
-  
-  #board-container {
-    margin: 20px auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  #board {
-    display: grid;
-    grid-template-columns: repeat(9, 40px);
-    grid-template-rows: repeat(9, 40px);
-    width: 360px; /* Adjusted width to remove the gaps */
-    height: 360px; /* Adjusted height to remove the gaps */
-    margin: 0 auto; /* Center the board */
-    border: 2px solid black;
-  }
-  
-  .cell {
-    border: 1px solid gray;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-  }
-  
-  /* Add borders between 3x3 grids */
-  .cell:nth-child(3n) {
-    border-right: 2px solid black; /* Add right border for every 3rd cell in a row */
-  }
-  
-  .cell:nth-child(9n) {
-    border-right: none; /* Remove right border for the last cell in each row */
-  }
-  
-  .cell:nth-child(n+19):nth-child(-n+27),
-  .cell:nth-child(n+46):nth-child(-n+54) {
-    border-bottom: 2px solid black; /* Add bottom border for the 3rd and 6th rows */
-  }
-  
-  .loading {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(41, 40, 40, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  .spinner {
-    border: 6px solid #f3f3f3;
-    border-top: 6px solid #3498db;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-  
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .message {
-    margin-top: 10px;
-    font-size: 18px;
-    font-weight: bold;
+
+  100% {
+    transform: translate(0, 0);
   }
 }
