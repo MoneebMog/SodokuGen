@@ -12,8 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
   themeButton.addEventListener('click', () => {
     if (themeStylesheet.getAttribute('href') === 'styles.css') {
       themeStylesheet.setAttribute('href', 'dark.css');
+      document.body.classList.add('dark-theme');
     } else {
       themeStylesheet.setAttribute('href', 'styles.css');
+      document.body.classList.remove('dark-theme');
     }
   });
 
