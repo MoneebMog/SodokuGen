@@ -2,27 +2,39 @@ document.addEventListener('DOMContentLoaded', function() {
   const numberSlider = document.getElementById('numberSlider');
   const numberLabel = document.getElementById('numberLabel');
   const generateButton = document.getElementById('generateButton');
+  const checkButton = document.getElementById('checkButton');
   const boardElement = document.getElementById('board');
   const loadingElement = document.getElementById('loading');
-  const themeButton = document.getElementById('themeButton');
-  const themeStylesheet = document.getElementById('themeStylesheet');
+  const countElement = document.getElementById('count');
+  const numberInputs = document.querySelectorAll('.number-input');
+  let selectedCell = null;
 
   numberSlider.addEventListener('input', updateSliderValue);
   generateButton.addEventListener('click', generateBoard);
-  themeButton.addEventListener('click', () => {
-    if (themeStylesheet.getAttribute('href') === 'styles.css') {
-      themeStylesheet.setAttribute('href', 'dark.css');
-      document.body.classList.add('dark-theme');
-    } else {
-      themeStylesheet.setAttribute('href', 'styles.css');
-      document.body.classList.remove('dark-theme');
-    }
-  });
+  checkButton.addEventListener('click', checkBoard);
+  boardElement.addEventListener('click', handleCellClick);
 
   function updateSliderValue() {
     const value = numberSlider.value;
     numberLabel.textContent = value;
   }
+
+  function handleNumberInput(event) {
+    const target = event.target;
+    if (selectedCell && target.value !== '') {
+      const number = parseInt(target.value);
+      if (!isNaN(number) && number >= 1 && number <= 9) {
+        selectedCell.textContent = number;
+      } else {
+        target.value = '';
+      }
+    }
+  }
+
+    for (let i = 0; i < numberInputs.length; i++) {
+      const input = numberInputs[i];
+      input.addEventListener('input', handleNumberInput);
+    }
 
   function generateBoard() {
     clearBoard();
@@ -31,11 +43,17 @@ document.addEventListener('DOMContentLoaded', function() {
       const puzzleBoard = generatePuzzleBoard(parseInt(numberSlider.value));
       renderBoard(puzzleBoard);
       hideLoading();
-  
-      const remainingCount = 81 - parseInt(numberSlider.value); // this only assumes that the number slider is actually giving the right amount lmao
-      const countElement = document.getElementById('count');
+
+      const remainingCount = 81 - parseInt(numberSlider.value);
       countElement.textContent = remainingCount;
     }, 1000);
+  }
+
+  function checkBoard() {
+    const userBoard = getUserBoard();
+    const puzzleBoard = generatePuzzleBoard(0);
+    const isValid = compareBoards(puzzleBoard, userBoard);
+    highlightCells(isValid);
   }
 
   function clearBoard() {
@@ -202,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderBoard(board) {
     // Clear the board
     boardElement.innerHTML = '';
-  
+
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         const cellValue = board[row][col];
@@ -213,4 +231,79 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   }
+
+  function getUserBoard() {
+    const userBoard = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+    const cells = boardElement.getElementsByClassName('cell');
+
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      const row = Math.floor(i / 9);
+      const col = i % 9;
+
+      if (cell.classList.contains('given')) {
+        userBoard[row][col] = cell.textContent !== '' ? parseInt(cell.textContent) : 0;
+      } else {
+        userBoard[row][col] = cell.textContent !== '' ? parseInt(cell.textContent) : -1;
+      }
+    }
+
+    return userBoard;
+  }
+
+  function compareBoards(puzzleBoard, userBoard) {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (puzzleBoard[row][col] !== userBoard[row][col]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  function highlightCells(isValid) {
+    const cells = boardElement.getElementsByClassName('cell');
+
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      if (cell.classList.contains('given')) {
+        continue;
+      }
+
+      if (isValid) {
+        cell.classList.add('correct');
+      } else {
+        cell.classList.add('incorrect');
+      }
+    }
+  }
+
+  function handleCellClick(event) {
+    const target = event.target;
+    if (target.classList.contains('cell')) {
+      const selectedGrid = target;
+      const cells = Array.from(boardElement.getElementsByClassName('cell'));
+      const index = cells.indexOf(selectedGrid);
+      const row = Math.floor(index / 9);
+      const col = index % 9;
+      if (selectedCell) {
+        selectedCell.classList.remove('selected');
+      }
+      if (selectedCell === selectedGrid) {
+        selectedCell = null;
+      } else {
+        selectedCell = selectedGrid;
+        selectedCell.classList.add('selected');
+  
+        // Focus on the first number input within the selected cell
+        const numberInput = selectedCell.querySelector('.number-input');
+        if (numberInput) {
+          numberInput.focus();
+        }
+      }
+    }
+  }
+
 });
