@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" id="themeStylesheet">
   <title>Sudoku Generator</title>
 </head>
 
@@ -15,6 +15,7 @@
     <input type="range" id="numberSlider" min="26" max="81" step="1" value="40">
     <span id="numberLabel">40</span>
     <button id="generateButton">Generate</button>
+    <button id="themeButton">Switch Theme</button> 
   </div>
   <div id="board-container">
     <div id="board"></div>
@@ -26,4 +27,5 @@
   </div>
   <script src="script.js"></script>
 </body>
+
 </html>
