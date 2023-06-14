@@ -4,9 +4,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const generateButton = document.getElementById('generateButton');
   const boardElement = document.getElementById('board');
   const loadingElement = document.getElementById('loading');
+  const themeButton = document.getElementById('themeButton');
+  const themeStylesheet = document.getElementById('themeStylesheet');
 
   numberSlider.addEventListener('input', updateSliderValue);
   generateButton.addEventListener('click', generateBoard);
+  themeButton.addEventListener('click', () => {
+    if (themeStylesheet.getAttribute('href') === 'styles.css') {
+      themeStylesheet.setAttribute('href', 'dark.css');
+    } else {
+      themeStylesheet.setAttribute('href', 'styles.css');
+    }
+  });
 
   function updateSliderValue() {
     const value = numberSlider.value;
