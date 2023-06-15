@@ -3,4 +3,4 @@ I made this so it can generate sodoku boards. Each time you hit the generate but
 
 6/14/23: I added a dark mode theme and a button to switch between the two but its all just a lot of css and who uses light mode theme anyways so im getting rid of it, currently working on making the puzzles solvable
 
-6/15/23: Valiant effort has been made but alas I am losing this battle, but not the war. Tomorrow for sure I will be able to figure out how to make the puzzles be solved. Keep me in your prayers, thank you.
+6/15/23: Valiant effort has been made but alas I am losing this battle, but not the war. Tomorrow for sure I will be able to figure out how to make the puzzles be solved. Keep me in your prayers, thank you. I have high hopes in the future to make 16x16 sodoku board puzzles.
