@@ -6,3 +6,5 @@ I made this so it can generate sodoku boards. Each time you hit the generate but
 6/15/23: Valiant effort has been made but alas I am losing this battle, but not the war. Tomorrow for sure I will be able to figure out how to make the puzzles be solved. Keep me in your prayers, thank you. I have high hopes in the future to make 16x16 sodoku board puzzles.
 
 6/16/23: I have become hopeless, destoryer of projects.
+
+6/17/23: All this... for a sodoku board?...
