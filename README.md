@@ -8,3 +8,5 @@ I made this so it can generate sodoku boards. Each time you hit the generate but
 6/16/23: I have become hopeless, destoryer of projects.
 
 6/17/23: All this... for a sodoku board?...
+
+6/17/23: I DID IT, I JUST NEED TO POLISH OUT THE EDGE CASES AND I NEED IT, A SODOKU GENERATOR AND SOLVER SO YOU CAN PLAY THE BOARDS YOU GENERATE!!!
