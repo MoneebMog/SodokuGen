@@ -51,6 +51,54 @@ h1 {
   font-size: 18px;
 }
 
+.cell input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 18px;
+  text-align: center;
+  color: #4CAF50;
+  background-color: inherit;
+  appearance: none;
+  -moz-appearance: textfield; /* Firefox */
+}
+
+.cell input.given {
+  color: white;
+}
+
+.cell input.given::placeholder {
+  color: white;
+}
+
+.cell input::-webkit-input-placeholder {
+  color: white;
+}
+
+.cell input:-moz-placeholder {
+  color: white;
+}
+
+.cell input::-moz-placeholder {
+  color: white;
+}
+
+.cell input:-ms-input-placeholder {
+  color: white;
+}
+
+/* Hide the up and down arrows in Firefox */
+.cell input::-webkit-inner-spin-button,
+.cell input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Center the text in the input element */
+.cell input[type="number"] {
+  text-align: center;
+}
+
 /* Add borders between 3x3 grids */
 .cell:nth-child(3n) {
   border-right: 2px solid #fff; /* Set the right border color to white */
@@ -136,10 +184,10 @@ h1 {
   animation: flying 2s linear infinite;
 }
 
-.selected {
+/* .selected {
   background-color: rgb(212, 212, 198);
   color: black;
-}
+} */
 
 @keyframes flying {
   0% {
