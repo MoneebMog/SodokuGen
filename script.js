@@ -6,54 +6,125 @@ document.addEventListener('DOMContentLoaded', function() {
   const boardElement = document.getElementById('board');
   const loadingElement = document.getElementById('loading');
   const countElement = document.getElementById('count');
-  const numberInputs = document.querySelectorAll('.number-input');
+  let numberInputs = document.querySelectorAll('.number-input');
+  let currentStatusElement = document.getElementById('currentStatus'); // Get the current status element
   let selectedCell = null;
 
   numberSlider.addEventListener('input', updateSliderValue);
   generateButton.addEventListener('click', generateBoard);
-  checkButton.addEventListener('click', checkBoard);
+
+  checkButton.addEventListener('click', function() {
+    const userBoard = getUserBoard();
+    const isValid = checkBoardValidity(userBoard);
+    highlightCells(isValid);
+    updateCurrentStatus(isValid); // Add this line to update the current status
+  });
+
+
   boardElement.addEventListener('click', handleCellClick);
 
   function updateSliderValue() {
     const value = numberSlider.value;
     numberLabel.textContent = value;
+
+    let remainingCount = 81;
+    for (let i = 0; i < numberInputs.length; i++) {
+      const input = numberInputs[i];
+      if (input.value !== '' && !input.classList.contains('given')) { // Check if the input is not empty and not a given number
+        remainingCount--;
+      }
+    }
+
+    countElement.textContent = remainingCount;
+    checkButton.disabled = remainingCount !== 0; // Enable the button when there are no remaining grids
   }
 
   function handleNumberInput(event) {
     const target = event.target;
-    if (selectedCell && target.value !== '') {
-      const number = parseInt(target.value);
-      if (!isNaN(number) && number >= 1 && number <= 9) {
-        selectedCell.textContent = number;
-      } else {
-        target.value = '';
-      }
+    const input = parseInt(target.value);
+    const isGiven = target.classList.contains('given');
+  
+    if (isGiven) {
+      return; // Do not allow editing of given numbers
     }
+  
+    if (!isNaN(input) && input >= 1 && input <= 9) {
+      target.value = input;
+      updateRemainingCount();
+    } else {
+      target.value = '';
+    }
+    
   }
 
+  function updateRemainingCount() {
+    let remainingCount = 81;
     for (let i = 0; i < numberInputs.length; i++) {
       const input = numberInputs[i];
-      input.addEventListener('input', handleNumberInput);
+      if (input.value !== '' || input.classList.contains('given')) {
+        remainingCount--;
+      }
     }
+  
+    countElement.textContent = remainingCount;
+    checkButton.disabled = remainingCount !== 0;
+  }
+
+  for (let i = 0; i < numberInputs.length; i++) {
+    const input = numberInputs[i];
+    input.addEventListener('input', handleNumberInput);
+  }
 
   function generateBoard() {
     clearBoard();
     showLoading();
     setTimeout(() => {
-      const puzzleBoard = generatePuzzleBoard(parseInt(numberSlider.value));
+      const remainingCount = parseInt(numberSlider.value);
+
+      if (remainingCount === 0) {
+        hideLoading();
+        return;
+      }
+
+      const puzzleBoard = generatePuzzleBoard(remainingCount);
       renderBoard(puzzleBoard);
       hideLoading();
 
-      const remainingCount = 81 - parseInt(numberSlider.value);
       countElement.textContent = remainingCount;
+      updateRemainingCount();
     }, 1000);
   }
 
-  function checkBoard() {
-    const userBoard = getUserBoard();
-    const puzzleBoard = generatePuzzleBoard(0);
-    const isValid = compareBoards(puzzleBoard, userBoard);
-    highlightCells(isValid);
+  // function please() {
+  //   const userBoard = getUserBoard();
+  //   const puzzleBoard = getPuzzleBoard();
+  //   const isValid = compareBoards(puzzleBoard, userBoard);
+  //   return isValid
+  // }
+
+  // function checkBoard() {
+  //   const remainingCount = parseInt(numberSlider.value);
+  //   if (remainingCount === 0) {
+  //     const userBoard = getUserBoard();
+  //     const puzzleBoard = getPuzzleBoard(); // Use the existing puzzle board
+  //     const isValid = compareBoards(puzzleBoard, userBoard);
+  //     highlightCells(isValid);
+  //     updateCurrentStatus(isValid); // Add this line to update the current status
+  //   }
+  // }
+
+  function getPuzzleBoard() {
+    const puzzleBoard = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+    const cells = boardElement.getElementsByClassName('cell');
+  
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      const row = Math.floor(i / 9);
+      const col = i % 9;
+      puzzleBoard[row][col] = cell.querySelector('.number-input').value !== '' ? parseInt(cell.querySelector('.number-input').value) : 0;
+    }
+  
+    return puzzleBoard;
   }
 
   function clearBoard() {
@@ -164,6 +235,55 @@ document.addEventListener('DOMContentLoaded', function() {
     return countSolutions(copyBoard) === 1;
   }
 
+  function checkBoardValidity(board) {
+    // Check rows
+    for (let row = 0; row < 9; row++) {
+      if (!isValidSet(board[row])) {
+        return false;
+      }
+    }
+  
+    // Check columns
+    for (let col = 0; col < 9; col++) {
+      const column = [];
+      for (let row = 0; row < 9; row++) {
+        column.push(board[row][col]);
+      }
+      if (!isValidSet(column)) {
+        return false;
+      }
+    }
+  
+    // Check 3x3 boxes
+    for (let startRow = 0; startRow < 9; startRow += 3) {
+      for (let startCol = 0; startCol < 9; startCol += 3) {
+        const box = [];
+        for (let row = startRow; row < startRow + 3; row++) {
+          for (let col = startCol; col < startCol + 3; col++) {
+            box.push(board[row][col]);
+          }
+        }
+        if (!isValidSet(box)) {
+          return false;
+        }
+      }
+    }
+  
+    return true;
+  }
+  
+  function isValidSet(arr) {
+    const set = new Set();
+    for (let i = 0; i < arr.length; i++) {
+      const num = arr[i];
+      if (num !== -1 && set.has(num)) {
+        return false;
+      }
+      set.add(num);
+    }
+    return true;
+  }
+
   function countSolutions(board) {
     let solutionCount = 0;
 
@@ -220,34 +340,47 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderBoard(board) {
     // Clear the board
     boardElement.innerHTML = '';
-
+  
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         const cellValue = board[row][col];
         const cell = document.createElement('div');
         cell.className = 'cell';
-        cell.textContent = cellValue !== 0 ? cellValue : '';
+        cell.innerHTML = `<input class="number-input${cellValue !== 0 ? ' given' : ''}" type="number" min="1" max="9" value="${cellValue !== 0 ? cellValue : ''}" ${cellValue !== 0 ? 'readonly' : ''}>`;
         boardElement.appendChild(cell);
       }
+    }
+  
+    // Remove existing event listeners for number inputs
+    for (let i = 0; i < numberInputs.length; i++) {
+      const input = numberInputs[i];
+      input.removeEventListener('input', handleNumberInput);
+    }
+  
+    // Update event listeners for number inputs
+    numberInputs = document.querySelectorAll('.number-input');
+    for (let i = 0; i < numberInputs.length; i++) {
+      const input = numberInputs[i];
+      input.addEventListener('input', handleNumberInput);
     }
   }
 
   function getUserBoard() {
     const userBoard = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
     const cells = boardElement.getElementsByClassName('cell');
-
+  
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i];
       const row = Math.floor(i / 9);
       const col = i % 9;
-
+  
       if (cell.classList.contains('given')) {
-        userBoard[row][col] = cell.textContent !== '' ? parseInt(cell.textContent) : 0;
+        userBoard[row][col] = cell.querySelector('.number-input').value !== '' ? parseInt(cell.querySelector('.number-input').value) : 0;
       } else {
-        userBoard[row][col] = cell.textContent !== '' ? parseInt(cell.textContent) : -1;
+        userBoard[row][col] = cell.querySelector('.number-input').value !== '' ? parseInt(cell.querySelector('.number-input').value) : -1;
       }
     }
-
+  
     return userBoard;
   }
 
@@ -259,19 +392,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     }
-
+  
     return true;
   }
 
   function highlightCells(isValid) {
     const cells = boardElement.getElementsByClassName('cell');
-
+  
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i];
       if (cell.classList.contains('given')) {
         continue;
       }
-
+  
+      cell.classList.remove('correct');
+      cell.classList.remove('incorrect');
+  
       if (isValid) {
         cell.classList.add('correct');
       } else {
@@ -288,22 +424,28 @@ document.addEventListener('DOMContentLoaded', function() {
       const index = cells.indexOf(selectedGrid);
       const row = Math.floor(index / 9);
       const col = index % 9;
-      if (selectedCell) {
-        selectedCell.classList.remove('selected');
-      }
-      if (selectedCell === selectedGrid) {
-        selectedCell = null;
-      } else {
-        selectedCell = selectedGrid;
-        selectedCell.classList.add('selected');
-  
-        // Focus on the first number input within the selected cell
-        const numberInput = selectedCell.querySelector('.number-input');
-        if (numberInput) {
-          numberInput.focus();
-        }
-      }
+      selectedCell = { row, col };
+      highlightSelectedCell();
     }
   }
 
+  function updateCurrentStatus(isValid) {
+    const statusText = isValid ? 'Correct' : 'Incorrect';
+    currentStatusElement.textContent = `Current board status: ${statusText}`;
+  }
+
+  function highlightSelectedCell() {
+    const cells = boardElement.getElementsByClassName('cell');
+
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      cell.classList.remove('selected');
+    }
+
+    if (selectedCell) {
+      const { row, col } = selectedCell;
+      const index = row * 9 + col;
+      cells[index].classList.add('selected');
+    }
+  }
 });
